@@ -21,5 +21,12 @@
     <string name="switch_camera">Switch camera</string>
     <string name="flash_auto">Flash auto</string>
     <string name="flash_off">Flash off</string>
-    <string name="flash_on">Flash on</string>
+
+    <string name="compose_disabled_message1">Flash on</string>
+    <string name="compose_shortcut_long_label1">Flash on</string>
+    <string name="compose_shortcut_short_label1">Flash on</string>
+
+    <string name="compose_disabled_message2">Flash on</string>
+    <string name="compose_shortcut_long_label2">Flash on</string>
+    <string name="compose_shortcut_short_label2">Flash on</string>
 </resources>

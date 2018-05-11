@@ -22,7 +22,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import android.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,17 +44,6 @@ public class AspectRatioFragment extends DialogFragment {
     private static final String ARG_CURRENT_ASPECT_RATIO = "current_aspect_ratio";
 
     private Listener mListener;
-
-    public static AspectRatioFragment newInstance(Set<AspectRatio> ratios,
-            AspectRatio currentRatio) {
-        final AspectRatioFragment fragment = new AspectRatioFragment();
-        final Bundle args = new Bundle();
-        args.putParcelableArray(ARG_ASPECT_RATIOS,
-                ratios.toArray(new AspectRatio[ratios.size()]));
-        args.putParcelable(ARG_CURRENT_ASPECT_RATIO, currentRatio);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onAttach(Context context) {

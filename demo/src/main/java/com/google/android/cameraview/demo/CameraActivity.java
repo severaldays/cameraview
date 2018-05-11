@@ -17,6 +17,7 @@
 package com.google.android.cameraview.demo;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -27,19 +28,13 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
+import android.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.app.AlertDialog;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.android.cameraview.AspectRatio;
@@ -49,18 +44,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Set;
 
 
 /**
  * This demo app saves the taken picture to a constant file.
  * $ adb pull /sdcard/Android/data/com.google.android.cameraview.demo/files/Pictures/picture.jpg
  */
-public class MainActivity extends AppCompatActivity implements
+public class CameraActivity extends Activity implements
         ActivityCompat.OnRequestPermissionsResultCallback,
         AspectRatioFragment.Listener {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "CameraActivity";
 
     private static final int REQUEST_CAMERA_PERMISSION = 1;
 
@@ -71,20 +65,6 @@ public class MainActivity extends AppCompatActivity implements
             CameraView.FLASH_OFF,
             CameraView.FLASH_ON,
     };
-
-    private static final int[] FLASH_ICONS = {
-            R.drawable.ic_flash_auto,
-            R.drawable.ic_flash_off,
-            R.drawable.ic_flash_on,
-    };
-
-    private static final int[] FLASH_TITLES = {
-            R.string.flash_auto,
-            R.string.flash_off,
-            R.string.flash_on,
-    };
-
-    private int mCurrentFlash;
 
     private CameraView mCameraView;
 
@@ -111,16 +91,16 @@ public class MainActivity extends AppCompatActivity implements
         if (mCameraView != null) {
             mCameraView.addCallback(mCallback);
         }
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.take_picture);
+        Button fab = (Button) findViewById(R.id.take_picture);
         if (fab != null) {
             fab.setOnClickListener(mOnClickListener);
         }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false);
-        }
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        ActionBar actionBar = getSupportActionBar();
+//        if (actionBar != null) {
+//            actionBar.setDisplayShowTitleEnabled(false);
+//        }
     }
 
     @Override
@@ -136,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements
                             new String[]{Manifest.permission.CAMERA},
                             REQUEST_CAMERA_PERMISSION,
                             R.string.camera_permission_not_granted)
-                    .show(getSupportFragmentManager(), FRAGMENT_DIALOG);
+                    .show(getFragmentManager(), FRAGMENT_DIALOG);
         } else {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA},
                     REQUEST_CAMERA_PERMISSION);
@@ -180,44 +160,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.aspect_ratio:
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                if (mCameraView != null
-                        && fragmentManager.findFragmentByTag(FRAGMENT_DIALOG) == null) {
-                    final Set<AspectRatio> ratios = mCameraView.getSupportedAspectRatios();
-                    final AspectRatio currentRatio = mCameraView.getAspectRatio();
-                    AspectRatioFragment.newInstance(ratios, currentRatio)
-                            .show(fragmentManager, FRAGMENT_DIALOG);
-                }
-                return true;
-            case R.id.switch_flash:
-                if (mCameraView != null) {
-                    mCurrentFlash = (mCurrentFlash + 1) % FLASH_OPTIONS.length;
-                    item.setTitle(FLASH_TITLES[mCurrentFlash]);
-                    item.setIcon(FLASH_ICONS[mCurrentFlash]);
-                    mCameraView.setFlash(FLASH_OPTIONS[mCurrentFlash]);
-                }
-                return true;
-            case R.id.switch_camera:
-                if (mCameraView != null) {
-                    int facing = mCameraView.getFacing();
-                    mCameraView.setFacing(facing == CameraView.FACING_FRONT ?
-                            CameraView.FACING_BACK : CameraView.FACING_FRONT);
-                }
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
     public void onAspectRatioSelected(@NonNull AspectRatio ratio) {
         if (mCameraView != null) {
             Toast.makeText(this, ratio.toString(), Toast.LENGTH_SHORT).show();
@@ -257,6 +199,7 @@ public class MainActivity extends AppCompatActivity implements
                 public void run() {
                     File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                             "picture.jpg");
+                    Log.i("onPictureTaken", "file " + file.getAbsolutePath() + ". " + file.isFile());
                     OutputStream os = null;
                     try {
                         os = new FileOutputStream(file);
